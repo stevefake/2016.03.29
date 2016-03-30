@@ -1,22 +1,15 @@
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra'
-
-# require 'minitest/autorun'
-# require 'minitest/pride'
 require './migrations'
 require './department'
 require './employee'
 
-# require 'sinatra'
 require 'rack/test'
 
 require 'json'
 require 'pry'
 
-# get '/' do
-#   "I am Groot"
-# end
 
 
 ActiveRecord::Base.establish_connection(
@@ -65,12 +58,12 @@ ActiveRecord::Migration.verbose = false
 
 
 
-get '/' do
-      # get '/employees'   # the 'rack/test' allows us to test the get
-    json_reponse = JSON.parse(last_response.body)
-    assert_equal [], last_response.body  # => returns list of students as a string
-    assert_equal "Bo", json_reponse.first["name"]
-  end
+# get '/' do
+#       # get '/employees'   # the 'rack/test' allows us to test the get
+#     json_reponse = JSON.parse(last_response.body)
+#     assert_equal [], last_response.body  # => returns list of students as a string
+#     assert_equal "Bo", json_reponse.first["name"]
+#   end
 
   # ENDPOINT # list of employees
   #

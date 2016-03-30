@@ -1,4 +1,4 @@
-# ENV['RACK_ENV'] = 'test'
+ENV['RACK_ENV'] = 'test'
 
 require "active_record"
 require 'rubygems'
@@ -8,8 +8,8 @@ require 'rack/test'
 require 'json'
 require 'pry'
 require 'minitest'
-require 'minitest/autorun'
-require 'minitest/pride'
+# require 'minitest/autorun'
+# require 'minitest/pride'
 require "./application"
 require './migrations'
 require './department'
@@ -36,6 +36,10 @@ class AppTest < Minitest::Unit::TestCase
       @employee.destroy
     end
 
+    # get '/' do
+    #   "I am Groot"
+    # end
+
     dept = Department.create(name: "Marketing")
     # employees = []
     employee_dan = Employee.create!(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
@@ -53,25 +57,25 @@ class AppTest < Minitest::Unit::TestCase
     # marvin.name
     dept.employees << employee_marvin
 
-    def test_employee_exists
-      assert Employee
-    end
-
-    def test_employee_can_be_created
-      refute_equal nil, @employee.id
-    end
-
-  def test_employees_returns_a_list_of_employees
-    get '/employees'
-    json_response = JSON.parse(last_response.body)
-    assert_equal "Bob", json_response.first["name"]
-  end
-
-  def test_employees_can_select_on_employee
-    get '/employees/1'
-    employee_hash = JSON.parse(last_response.body)
-    assert_equal "Bob", employee_hash['name']
-  end
+  #   def test_employee_exists
+  #     assert Employee
+  #   end
+  #
+  #   def test_employee_can_be_created
+  #     refute_equal nil, @employee.id
+  #   end
+  #
+  # def test_employees_returns_a_list_of_employees
+  #   get '/employees'
+  #   json_response = JSON.parse(last_response.body)
+  #   assert_equal "Bob", json_response.first["name"]
+  # end
+  #
+  # def test_employees_can_select_on_employee
+  #   get '/employees/1'
+  #   employee_hash = JSON.parse(last_response.body)
+  #   assert_equal "Bob", employee_hash['name']
+  # end
 
   # def test_pick_will_give_random_employee
   #   post '/pick'
