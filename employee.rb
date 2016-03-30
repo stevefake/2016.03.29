@@ -1,5 +1,8 @@
 require 'active_record'
 
+require 'sinatra'
+require 'json'
+
 class Employee < ActiveRecord::Base
   belongs_to :department
 

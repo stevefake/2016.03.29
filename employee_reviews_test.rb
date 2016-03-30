@@ -1,13 +1,47 @@
+ENV['RACK_ENV'] = 'test'
+
+require 'minitest'
 require 'minitest/autorun'
+require 'rack/test'
+
+require "./application"
+
+require 'rubygems'
+require 'bundler/setup'
+require 'sinatra'
+
+# require 'minitest/autorun'
 require 'minitest/pride'
 require './migrations'
 require './department'
+
+require 'sinatra'
+require 'json'
 
 ActiveRecord::Base.establish_connection(
   adapter: 'sqlite3',
   database: 'test.sqlite3'
 )
 ActiveRecord::Migration.verbose = false
+
+class AppTest < Minitest::Unit::TestCase
+  include Rack::Test::Methods
+
+  def setup
+    begin CompanyDataMigration.migrate(:down); rescue; end
+    CompanyDataMigration.migrate(:up)
+  end
+
+  def app
+    Sinatra::Application
+  end
+
+  def test_it_says_hello_world
+    response = get '/'
+    assert response.ok?
+    assert_equal 'I am Groot', response.body
+  end
+end
 
 class EmployeeReviews < Minitest::Test
 
@@ -156,4 +190,7 @@ class EmployeeReviews < Minitest::Test
   private def positive_review_two
     "Wanda has been an incredibly consistent and effective developer.  Clients are always satisfied with her work, developers are impressed with her productivity, and she's more than willing to help others even when she has a substantial workload of her own.  She is a great asset to Awesome Company, and everyone enjoys working with her.  During the past year, she has largely been devoted to work with the Cement Company, and she is the perfect woman for the job.  We know that work on a single project can become monotonous, however, so over the next few months, we hope to spread some of the Cement Company work to others.  This will also allow Wanda to pair more with others and spread her effectiveness to other projects."
   end
+
+
+
 end
