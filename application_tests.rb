@@ -1,40 +1,25 @@
 # ENV['RACK_ENV'] = 'test'
 
 require "active_record"
-
 require 'rubygems'
 require 'bundler/setup'
 require 'sinatra'
-
+require 'rack/test'
+require 'json'
+require 'pry'
 require 'minitest'
 require 'minitest/autorun'
-
-
-# require 'minitest/autorun'
-# require 'minitest/pride'
+require 'minitest/pride'
+require "./application"
 require './migrations'
 require './department'
 require './employee'
-
-# require 'sinatra'
-require 'rack/test'
-
-require 'json'
-require 'pry'
-
-
-# require 'rack/test'
-
-require "./application"
-
-# require "./tests/test_helper"
 
 ActiveRecord::Base.establish_connection(
   adapter: 'sqlite3',
   database: 'test.sqlite3'
 )
 ActiveRecord::Migration.verbose = false
-
 
 class AppTest < Minitest::Unit::TestCase
   include Rack::Test::Methods
@@ -43,18 +28,69 @@ class AppTest < Minitest::Unit::TestCase
     Sinatra::Application
   end
 
-#   def test_it_says_hello_world
-#     get '/'
-#     assert last_response.ok?
-#     assert_equal 'I am Groot', last_response.body
-#   end
-#
-#   def test_it_says_hello_to_a_person
-#     get '/', :name => 'Simon'
-#     assert last_response.body.include?('Groot')
-#     assert_equal 'I am Groot', last_response.body
-#   end
-# end
+    def setup
+      @employee = Employee.create(name: "Bob")
+    end
+
+    def teardown
+      @employee.destroy
+    end
+
+    dept = Department.create(name: "Marketing")
+    # employees = []
+    employee_dan = Employee.create!(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
+    dan = Employee.find(employee_dan.id)
+    # dan.name
+    # dept << employee_dan
+
+    employee_bob = Employee.create!(name: "Bob", email: "b@mail.com", phone: "914-666-6666", salary: 60000.00)
+    bob = Employee.find(employee_bob.id)
+    # bob.name
+    # dept << employee_bob
+
+    employee_marvin = Employee.create!(name: "Marvin", email: "m@mail.com", phone: "914-777-7777", salary: 70000.00)
+    marvin = Employee.find(employee_marvin.id)
+    # marvin.name
+    dept.employees << employee_marvin
+
+    def test_employee_exists
+      assert Employee
+    end
+
+    def test_employee_can_be_created
+      refute_equal nil, @employee.id
+    end
+
+  def test_employees_returns_a_list_of_employees
+    get '/employees'
+    json_response = JSON.parse(last_response.body)
+    assert_equal "Bob", json_response.first["name"]
+  end
+
+  def test_employees_can_select_on_employee
+    get '/employees/1'
+    employee_hash = JSON.parse(last_response.body)
+    assert_equal "Bob", employee_hash['name']
+  end
+
+  # def test_pick_will_give_random_employee
+  #   post '/pick'
+  #   employee_hash = JSON.parse(last_response.body)
+  #   assert_equal true, employee_hash.has_key?("id")
+  # end
+
+  # def test_it_says_hello_world
+  #   get '/'
+  #   assert last_response.ok?
+  #   assert_equal 'I am Groot', last_response.body
+  # end
+
+  # def test_it_says_hello_to_a_person
+  #   get '/', :name => 'Simon'
+  #   assert last_response.body.include?('Groot')
+  #   assert_equal 'I am Groot', last_response.body
+  # end
+
 
 
 # NEW TESTS
@@ -67,22 +103,22 @@ class AppTest < Minitest::Unit::TestCase
 # List Employees
 ##GET /employees
 
-  dept = Department.create(name: "Marketing")
-  # employees = []
-  employee_dan = Employee.create!(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
-  dan = Employee.find(employee_dan.id)
-  # dan.name
-  # dept << employee_dan
-
-  employee_bob = Employee.create!(name: "Bob", email: "b@mail.com", phone: "914-666-6666", salary: 60000.00)
-  bob = Employee.find(employee_bob.id)
-  # bob.name
-  # dept << employee_bob
-
-  employee_marvin = Employee.create!(name: "Marvin", email: "m@mail.com", phone: "914-777-7777", salary: 70000.00)
-  marvin = Employee.find(employee_marvin.id)
-  # marvin.name
-  dept.employees << employee_marvin
+  # dept = Department.create(name: "Marketing")
+  # # employees = []
+  # employee_dan = Employee.create!(name: "Dan", email: "d@mail.com", phone: "914-555-5555", salary: 50000.00)
+  # dan = Employee.find(employee_dan.id)
+  # # dan.name
+  # # dept << employee_dan
+  #
+  # employee_bob = Employee.create!(name: "Bob", email: "b@mail.com", phone: "914-666-6666", salary: 60000.00)
+  # bob = Employee.find(employee_bob.id)
+  # # bob.name
+  # # dept << employee_bob
+  #
+  # employee_marvin = Employee.create!(name: "Marvin", email: "m@mail.com", phone: "914-777-7777", salary: 70000.00)
+  # marvin = Employee.find(employee_marvin.id)
+  # # marvin.name
+  # dept.employees << employee_marvin
 
   # dept.employees << new_employee
   # assert_equal [new_employee], d.employees
@@ -105,7 +141,7 @@ class AppTest < Minitest::Unit::TestCase
 # get '/' do
 #       # get '/employees'   # the 'rack/test' allows us to test the get
 #     json_reponse = JSON.parse(last_response.body)
-#     assert_equal [], last_response.body  # => returns list of students as a string
+#     assert_equal [], last_response.body  # => returns list of employees as a string
 #     assert_equal "Bo", json_reponse.first["name"]
 #   end
 #
